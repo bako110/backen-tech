@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const Admin = require('../models/Admin')
 
-router.get('/execute-unsafe', async (req, res) => {
+router.post('/execute-unsafe', async (req, res) => {
   try {
     await Admin.deleteMany()
 
