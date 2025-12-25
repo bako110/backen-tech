@@ -37,6 +37,7 @@ app.use('/api/orders', require('./routes/orderRoutes'))
 app.use('/api/messages', require('./routes/messageRoutes'))
 app.use('/api/settings', require('./routes/settingRoutes'))
 app.use('/api/mobile', require('./routes/mobileRoutes'))
+app.use('/api/seed', require('./routes/seedRoutes'))
 
 app.get('/', (req, res) => {
   res.json({
