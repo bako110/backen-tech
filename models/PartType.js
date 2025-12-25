@@ -56,4 +56,4 @@ partTypeSchema.pre('save', function(next) {
   next()
 })
 
-module.exports = mongoose.model('PartType', partTypeSchema)
+module.exports = mongoose.models.PartType || mongoose.model('PartType', partTypeSchema)

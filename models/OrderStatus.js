@@ -41,4 +41,4 @@ const orderStatusSchema = new mongoose.Schema({
 orderStatusSchema.index({ code: 1 }, { unique: true })
 orderStatusSchema.index({ ordre: 1 })
 
-module.exports = mongoose.model('OrderStatus', orderStatusSchema)
+module.exports = mongoose.models.OrderStatus || mongoose.model('OrderStatus', orderStatusSchema)

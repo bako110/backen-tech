@@ -117,4 +117,4 @@ orderSchema.statics.generateOrderNumber = async function() {
   return `CMD-${year}-${String(nextNumber).padStart(4, '0')}`
 }
 
-module.exports = mongoose.model('Order', orderSchema)
+module.exports = mongoose.models.Order || mongoose.model('Order', orderSchema)

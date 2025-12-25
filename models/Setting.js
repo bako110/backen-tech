@@ -69,4 +69,4 @@ settingSchema.pre('save', function(next) {
   next()
 })
 
-module.exports = mongoose.model('Setting', settingSchema)
+module.exports = mongoose.models.Setting || mongoose.model('Setting', settingSchema)

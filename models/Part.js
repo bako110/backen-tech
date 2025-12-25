@@ -80,8 +80,7 @@ const partSchema = new mongoose.Schema({
     default: false
   },
   slug: {
-    type: String,
-    sparse: true
+    type: String
   },
   tags: [String],
   vues: {
@@ -136,4 +135,4 @@ partSchema.pre('save', function(next) {
   next()
 })
 
-module.exports = mongoose.model('Part', partSchema)
+module.exports = mongoose.models.Part || mongoose.model('Part', partSchema)
