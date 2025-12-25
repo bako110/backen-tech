@@ -64,7 +64,6 @@ const vehicleSchema = new mongoose.Schema({
   },
   slug: {
     type: String,
-    unique: true,
     sparse: true
   },
   tags: [String],
@@ -106,7 +105,7 @@ const vehicleSchema = new mongoose.Schema({
 
 vehicleSchema.index({ statut: 1, miseEnAvant: -1 })
 vehicleSchema.index({ 'champsDynamiques.marque': 1 })
-vehicleSchema.index({ slug: 1 })
+vehicleSchema.index({ slug: 1 }, { unique: true, sparse: true })
 
 vehicleSchema.pre('save', function(next) {
   this.dateModification = Date.now()

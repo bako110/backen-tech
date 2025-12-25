@@ -10,7 +10,6 @@ const orderStatusSchema = new mongoose.Schema({
   code: {
     type: String,
     required: true,
-    unique: true,
     lowercase: true
   },
   description: String,
@@ -39,7 +38,7 @@ const orderStatusSchema = new mongoose.Schema({
   }
 })
 
-orderStatusSchema.index({ code: 1 })
+orderStatusSchema.index({ code: 1 }, { unique: true })
 orderStatusSchema.index({ ordre: 1 })
 
 module.exports = mongoose.model('OrderStatus', orderStatusSchema)

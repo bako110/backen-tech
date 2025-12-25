@@ -48,6 +48,28 @@ app.get('/', (req, res) => {
   })
 })
 
+app.get('/health', async (req, res) => {
+  const mongoose = require('mongoose')
+  const dbStatus = mongoose.connection.readyState
+  const statusMap = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting'
+  }
+  
+  res.json({
+    status: 'ok',
+    database: {
+      status: statusMap[dbStatus],
+      host: mongoose.connection.host || 'non connecté',
+      name: mongoose.connection.name || 'non connecté'
+    },
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString()
+  })
+})
+
 app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(err.status || 500).json({

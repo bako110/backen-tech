@@ -11,7 +11,6 @@ const vehicleTypeSchema = new mongoose.Schema({
   code: {
     type: String,
     required: true,
-    unique: true,
     lowercase: true,
     trim: true
   },
@@ -44,7 +43,7 @@ const vehicleTypeSchema = new mongoose.Schema({
   }
 })
 
-vehicleTypeSchema.index({ code: 1 })
+vehicleTypeSchema.index({ code: 1 }, { unique: true })
 vehicleTypeSchema.index({ actif: 1, ordre: 1 })
 
 module.exports = mongoose.model('VehicleType', vehicleTypeSchema)

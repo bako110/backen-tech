@@ -3,8 +3,7 @@ const mongoose = require('mongoose')
 const orderSchema = new mongoose.Schema({
   numeroCommande: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   client: {
     nom: { type: String, required: true },
@@ -93,7 +92,7 @@ const orderSchema = new mongoose.Schema({
   }
 })
 
-orderSchema.index({ numeroCommande: 1 })
+orderSchema.index({ numeroCommande: 1 }, { unique: true })
 orderSchema.index({ statut: 1 })
 orderSchema.index({ 'client.telephone': 1 })
 orderSchema.index({ dateCommande: -1 })

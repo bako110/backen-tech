@@ -11,7 +11,6 @@ const partTypeSchema = new mongoose.Schema({
   code: {
     type: String,
     required: true,
-    unique: true,
     lowercase: true,
     trim: true
   },
@@ -49,7 +48,7 @@ const partTypeSchema = new mongoose.Schema({
   }
 })
 
-partTypeSchema.index({ code: 1 })
+partTypeSchema.index({ code: 1 }, { unique: true })
 partTypeSchema.index({ actif: 1, ordre: 1 })
 
 partTypeSchema.pre('save', function(next) {

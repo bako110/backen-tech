@@ -81,7 +81,6 @@ const partSchema = new mongoose.Schema({
   },
   slug: {
     type: String,
-    unique: true,
     sparse: true
   },
   tags: [String],
@@ -118,7 +117,7 @@ const partSchema = new mongoose.Schema({
 
 partSchema.index({ typePiece: 1, statut: 1 })
 partSchema.index({ stock: 1 })
-partSchema.index({ slug: 1 })
+partSchema.index({ slug: 1 }, { unique: true, sparse: true })
 
 partSchema.pre('save', function(next) {
   this.dateModification = Date.now()
