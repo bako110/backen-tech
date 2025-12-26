@@ -34,4 +34,13 @@ router.put('/notifications/:id/read', protectClient, notificationController.mark
 router.put('/notifications/read-all', protectClient, notificationController.markAllAsRead)
 router.delete('/notifications/:id', protectClient, notificationController.deleteNotification)
 
+// Routes du panier
+const cartController = require('../controllers/cartController')
+router.get('/cart', protectClient, cartController.getCart)
+router.post('/cart/items', protectClient, cartController.addItem)
+router.put('/cart/items/:itemId', protectClient, cartController.updateQuantity)
+router.delete('/cart/items/:itemId', protectClient, cartController.removeItem)
+router.delete('/cart', protectClient, cartController.clearCart)
+router.get('/cart/total', protectClient, cartController.getCartTotal)
+
 module.exports = router
