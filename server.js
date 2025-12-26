@@ -12,8 +12,15 @@ const app = express()
 
 connectDB()
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'https://admin-tech-mec.onrender.com',
+  '*'
+]
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: process.env.CORS_ORIGIN || allowedOrigins,
   credentials: true
 }))
 

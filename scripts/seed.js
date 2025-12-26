@@ -5,6 +5,8 @@ const VehicleType = require('../models/VehicleType')
 const PartType = require('../models/PartType')
 const OrderStatus = require('../models/OrderStatus')
 const Setting = require('../models/Setting')
+const Vehicle = require('../models/Vehicle')
+const Part = require('../models/Part')
 
 dotenv.config()
 
@@ -25,6 +27,8 @@ const seedData = async () => {
     await PartType.deleteMany()
     await OrderStatus.deleteMany()
     await Setting.deleteMany()
+    await Vehicle.deleteMany()
+    await Part.deleteMany()
 
     console.log('🗑️  Données existantes supprimées')
 
@@ -282,9 +286,277 @@ const seedData = async () => {
 
     console.log('✅ Paramètres créés')
 
+    const vehicles = await Vehicle.insertMany([
+      {
+        typeVehicule: vehicleTypes[0]._id,
+        titre: 'Toyota Corolla 2024',
+        description: 'Véhicule neuf, économique et fiable. Parfait pour la ville.',
+        prix: 15000000,
+        prixPromo: 14500000,
+        statut: 'publie',
+        miseEnAvant: true,
+        nouveau: true,
+        populaire: true,
+        champsDynamiques: {
+          marque: 'Toyota',
+          modele: 'Corolla',
+          annee: 2024,
+          kilometrage: 0,
+          carburant: 'Essence',
+          transmission: 'Automatique',
+          couleur: 'Blanc'
+        },
+        images: [
+          { url: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800', ordre: 1, principale: true },
+          { url: 'https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=800', ordre: 2, principale: false }
+        ],
+        creePar: admin._id
+      },
+      {
+        typeVehicule: vehicleTypes[0]._id,
+        titre: 'Honda Civic 2024',
+        description: 'Berline sportive et élégante avec technologie avancée.',
+        prix: 16500000,
+        statut: 'publie',
+        miseEnAvant: true,
+        nouveau: true,
+        champsDynamiques: {
+          marque: 'Honda',
+          modele: 'Civic',
+          annee: 2024,
+          kilometrage: 0,
+          carburant: 'Essence',
+          transmission: 'Automatique',
+          couleur: 'Noir'
+        },
+        images: [
+          { url: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=800', ordre: 1, principale: true }
+        ],
+        creePar: admin._id
+      },
+      {
+        typeVehicule: vehicleTypes[1]._id,
+        titre: 'Mercedes-Benz C-Class 2020',
+        description: 'Véhicule d\'occasion en excellent état, luxueux et confortable.',
+        prix: 18000000,
+        prixPromo: 17000000,
+        statut: 'publie',
+        populaire: true,
+        champsDynamiques: {
+          marque: 'Mercedes-Benz',
+          modele: 'C-Class',
+          annee: 2020,
+          kilometrage: 45000,
+          carburant: 'Diesel',
+          transmission: 'Automatique',
+          couleur: 'Gris'
+        },
+        images: [
+          { url: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800', ordre: 1, principale: true }
+        ],
+        creePar: admin._id
+      },
+      {
+        typeVehicule: vehicleTypes[1]._id,
+        titre: 'BMW Serie 3 2019',
+        description: 'Berline sportive allemande, performances exceptionnelles.',
+        prix: 16500000,
+        statut: 'publie',
+        populaire: true,
+        champsDynamiques: {
+          marque: 'BMW',
+          modele: 'Serie 3',
+          annee: 2019,
+          kilometrage: 52000,
+          carburant: 'Essence',
+          transmission: 'Automatique',
+          couleur: 'Bleu'
+        },
+        images: [
+          { url: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800', ordre: 1, principale: true }
+        ],
+        creePar: admin._id
+      },
+      {
+        typeVehicule: vehicleTypes[0]._id,
+        titre: 'Nissan Patrol 2024',
+        description: 'SUV robuste et spacieux, idéal pour les familles.',
+        prix: 25000000,
+        statut: 'publie',
+        miseEnAvant: true,
+        nouveau: true,
+        champsDynamiques: {
+          marque: 'Nissan',
+          modele: 'Patrol',
+          annee: 2024,
+          kilometrage: 0,
+          carburant: 'Diesel',
+          transmission: 'Automatique',
+          couleur: 'Blanc'
+        },
+        images: [
+          { url: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=800', ordre: 1, principale: true }
+        ],
+        creePar: admin._id
+      },
+      {
+        typeVehicule: vehicleTypes[1]._id,
+        titre: 'Audi A4 2018',
+        description: 'Berline premium avec intérieur raffiné.',
+        prix: 14000000,
+        statut: 'publie',
+        champsDynamiques: {
+          marque: 'Audi',
+          modele: 'A4',
+          annee: 2018,
+          kilometrage: 68000,
+          carburant: 'Diesel',
+          transmission: 'Automatique',
+          couleur: 'Argent'
+        },
+        images: [
+          { url: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800', ordre: 1, principale: true }
+        ],
+        creePar: admin._id
+      }
+    ])
+
+    console.log('✅ Véhicules créés:', vehicles.length)
+
+    const parts = await Part.insertMany([
+      {
+        typePiece: partTypes[0]._id,
+        titre: 'Filtre à huile Toyota',
+        description: 'Filtre à huile d\'origine Toyota, compatible avec Corolla, Camry, RAV4.',
+        prix: 8500,
+        stock: 45,
+        statut: 'publie',
+        populaire: true,
+        miseEnAvant: true,
+        compatibilite: [
+          { marque: 'Toyota', modele: 'Corolla', anneeDebut: 2015, anneeFin: 2024 },
+          { marque: 'Toyota', modele: 'Camry', anneeDebut: 2015, anneeFin: 2024 }
+        ],
+        images: [
+          { url: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400', ordre: 1, principale: true }
+        ],
+        creePar: admin._id
+      },
+      {
+        typePiece: partTypes[1]._id,
+        titre: 'Plaquettes de frein avant',
+        description: 'Plaquettes de frein haute performance pour berlines.',
+        prix: 25000,
+        stock: 30,
+        statut: 'publie',
+        populaire: true,
+        compatibilite: [
+          { marque: 'Honda', modele: 'Civic', anneeDebut: 2016, anneeFin: 2024 },
+          { marque: 'Toyota', modele: 'Corolla', anneeDebut: 2016, anneeFin: 2024 }
+        ],
+        images: [
+          { url: 'https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=400', ordre: 1, principale: true }
+        ],
+        creePar: admin._id
+      },
+      {
+        typePiece: partTypes[2]._id,
+        titre: 'Amortisseurs arrière',
+        description: 'Amortisseurs de qualité supérieure pour un confort optimal.',
+        prix: 85000,
+        stock: 12,
+        statut: 'publie',
+        miseEnAvant: true,
+        compatibilite: [
+          { marque: 'Mercedes-Benz', modele: 'C-Class', anneeDebut: 2015, anneeFin: 2021 }
+        ],
+        images: [
+          { url: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=400', ordre: 1, principale: true }
+        ],
+        creePar: admin._id
+      },
+      {
+        typePiece: partTypes[3]._id,
+        titre: 'Batterie 12V 70Ah',
+        description: 'Batterie puissante et durable pour tous types de véhicules.',
+        prix: 65000,
+        stock: 20,
+        statut: 'publie',
+        populaire: true,
+        nouveau: true,
+        images: [
+          { url: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=400', ordre: 1, principale: true }
+        ],
+        creePar: admin._id
+      },
+      {
+        typePiece: partTypes[4]._id,
+        titre: 'Kit d\'embrayage complet',
+        description: 'Kit d\'embrayage incluant disque, plateau et butée.',
+        prix: 120000,
+        stock: 8,
+        statut: 'publie',
+        compatibilite: [
+          { marque: 'Nissan', modele: 'Patrol', anneeDebut: 2010, anneeFin: 2020 }
+        ],
+        images: [
+          { url: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400', ordre: 1, principale: true }
+        ],
+        creePar: admin._id
+      },
+      {
+        typePiece: partTypes[5]._id,
+        titre: 'Pare-chocs avant',
+        description: 'Pare-chocs avant d\'origine, finition parfaite.',
+        prix: 150000,
+        prixPromo: 135000,
+        stock: 5,
+        statut: 'publie',
+        miseEnAvant: true,
+        compatibilite: [
+          { marque: 'BMW', modele: 'Serie 3', anneeDebut: 2015, anneeFin: 2019 }
+        ],
+        images: [
+          { url: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400', ordre: 1, principale: true }
+        ],
+        creePar: admin._id
+      },
+      {
+        typePiece: partTypes[0]._id,
+        titre: 'Filtre à air sport',
+        description: 'Filtre à air haute performance pour améliorer les performances.',
+        prix: 15000,
+        stock: 35,
+        statut: 'publie',
+        nouveau: true,
+        images: [
+          { url: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400', ordre: 1, principale: true }
+        ],
+        creePar: admin._id
+      },
+      {
+        typePiece: partTypes[1]._id,
+        titre: 'Disques de frein ventilés',
+        description: 'Disques de frein ventilés pour un freinage optimal.',
+        prix: 45000,
+        stock: 18,
+        statut: 'publie',
+        populaire: true,
+        images: [
+          { url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400', ordre: 1, principale: true }
+        ],
+        creePar: admin._id
+      }
+    ])
+
+    console.log('✅ Pièces créées:', parts.length)
+
     console.log('\n🎉 Seed terminé avec succès!')
     console.log('\n📧 Email: admin@mab.com')
     console.log('🔑 Mot de passe: admin123')
+    console.log('\n📊 Données créées:')
+    console.log('   - Véhicules:', vehicles.length)
+    console.log('   - Pièces:', parts.length)
 
     process.exit(0)
   } catch (error) {

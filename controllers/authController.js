@@ -1,6 +1,35 @@
 const { validationResult } = require('express-validator')
 const authService = require('../services/authService')
 
+exports.register = async (req, res) => {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Erreurs de validation',
+        errors: errors.array()
+      })
+    }
+
+    const { nom, email, telephone, motDePasse } = req.body
+
+    const result = await authService.register(nom, email, telephone, motDePasse)
+
+    res.status(201).json({
+      success: true,
+      message: 'Inscription réussie',
+      ...result
+    })
+  } catch (error) {
+    console.error('Erreur inscription:', error)
+    res.status(400).json({
+      success: false,
+      message: error.message || 'Erreur lors de l\'inscription'
+    })
+  }
+}
+
 exports.login = async (req, res) => {
   try {
     const errors = validationResult(req)

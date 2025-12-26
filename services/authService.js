@@ -1,72 +1,119 @@
 const jwt = require('jsonwebtoken')
+const User = require('../models/User')
 const Admin = require('../models/Admin')
 
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE || '7d'
+const generateToken = (id, role) => {
+  return jwt.sign({ id, role }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE || '30d'
   })
 }
 
 class AuthService {
-  async login(email, motDePasse) {
-    const admin = await Admin.findOne({ email }).select('+motDePasse')
+  async register(nom, email, telephone, motDePasse) {
+    const userExists = await User.findOne({ email })
+    
+    if (userExists) {
+      throw new Error('Un compte avec cet email existe déjà')
+    }
 
-    if (!admin) {
+    const user = await User.create({
+      nom,
+      email,
+      telephone,
+      motDePasse,
+      role: 'client'
+    })
+
+    const token = generateToken(user._id, user.role)
+
+    return {
+      token,
+      client: {
+        _id: user._id,
+        nom: user.nom,
+        email: user.email,
+        telephone: user.telephone,
+        role: user.role
+      }
+    }
+  }
+
+  async login(email, motDePasse) {
+    // Chercher d'abord dans Admin
+    let user = await Admin.findOne({ email }).select('+motDePasse')
+    
+    // Si pas trouvé dans Admin, chercher dans User
+    if (!user) {
+      user = await User.findOne({ email }).select('+motDePasse')
+    }
+
+    if (!user) {
       throw new Error('Email ou mot de passe incorrect')
     }
 
-    if (!admin.actif) {
+    if (!user.actif) {
       throw new Error('Votre compte est désactivé')
     }
 
-    const isPasswordMatch = await admin.comparePassword(motDePasse)
+    const isPasswordMatch = await user.comparePassword(motDePasse)
 
     if (!isPasswordMatch) {
       throw new Error('Email ou mot de passe incorrect')
     }
 
-    admin.dernierConnexion = Date.now()
-    await admin.save()
+    const token = generateToken(user._id, user.role)
 
-    const token = generateToken(admin._id)
+    const userData = user.toObject()
+    delete userData.motDePasse
 
-    const adminData = admin.toObject()
-    delete adminData.motDePasse
+    const responseKey = user.role === 'client' ? 'client' : 'admin'
 
-    return { token, admin: adminData }
+    return { token, [responseKey]: userData }
   }
 
-  async getMe(adminId) {
-    const admin = await Admin.findById(adminId)
-    return admin
+  async getMe(userId) {
+    const user = await User.findById(userId)
+    return user
   }
 
-  async updateProfile(adminId, data) {
-    const { nom, email, telephone, avatar } = data
+  async updateProfile(userId, data) {
+    const allowedFields = ['nom', 'email', 'telephone', 'adresse']
+    const updates = {}
 
-    const admin = await Admin.findById(adminId)
+    allowedFields.forEach(field => {
+      if (data[field] !== undefined) {
+        updates[field] = data[field]
+      }
+    })
 
-    if (nom) admin.nom = nom
-    if (email) admin.email = email
-    if (telephone) admin.telephone = telephone
-    if (avatar) admin.avatar = avatar
+    const user = await User.findByIdAndUpdate(
+      userId,
+      updates,
+      { new: true, runValidators: true }
+    )
 
-    await admin.save()
+    if (!user) {
+      throw new Error('Utilisateur non trouvé')
+    }
 
-    return admin
+    return user
   }
 
-  async changePassword(adminId, ancienMotDePasse, nouveauMotDePasse) {
-    const admin = await Admin.findById(adminId).select('+motDePasse')
+  async changePassword(userId, ancienMotDePasse, nouveauMotDePasse) {
+    const user = await User.findById(userId).select('+motDePasse')
 
-    const isMatch = await admin.comparePassword(ancienMotDePasse)
+    if (!user) {
+      throw new Error('Utilisateur non trouvé')
+    }
+
+    const isMatch = await user.comparePassword(ancienMotDePasse)
 
     if (!isMatch) {
       throw new Error('Ancien mot de passe incorrect')
     }
 
-    admin.motDePasse = nouveauMotDePasse
-    await admin.save()
+    user.motDePasse = nouveauMotDePasse
+    await user.save()
 
     return true
   }

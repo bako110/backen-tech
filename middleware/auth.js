@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const Admin = require('../models/Admin')
+const User = require('../models/User')
 
 exports.protect = async (req, res, next) => {
   let token
@@ -18,20 +18,28 @@ exports.protect = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     
-    req.admin = await Admin.findById(decoded.id).select('-motDePasse')
+    const user = await User.findById(decoded.id).select('-motDePasse')
     
-    if (!req.admin) {
+    if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Administrateur non trouvé'
+        message: 'Utilisateur non trouvé'
       })
     }
 
-    if (!req.admin.actif) {
+    if (!user.actif) {
       return res.status(401).json({
         success: false,
         message: 'Compte désactivé'
       })
+    }
+
+    // Compatibilité : req.user pour tous, req.admin si admin, req.client si client
+    req.user = user
+    if (user.role === 'client') {
+      req.client = user
+    } else {
+      req.admin = user
     }
 
     next()
@@ -52,5 +60,57 @@ exports.authorize = (...roles) => {
       })
     }
     next()
+  }
+}
+
+exports.protectClient = async (req, res, next) => {
+  let token
+
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1]
+  }
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: 'Non autorisé - Token manquant'
+    })
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    
+    const user = await User.findById(decoded.id).select('-motDePasse')
+    
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Utilisateur non trouvé'
+      })
+    }
+
+    if (!user.actif) {
+      return res.status(401).json({
+        success: false,
+        message: 'Compte désactivé'
+      })
+    }
+
+    if (user.role !== 'client') {
+      return res.status(403).json({
+        success: false,
+        message: 'Accès réservé aux clients'
+      })
+    }
+
+    req.user = user
+    req.client = user
+
+    next()
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: 'Token invalide'
+    })
   }
 }

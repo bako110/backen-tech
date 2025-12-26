@@ -114,7 +114,7 @@ exports.getPartTypes = async (req, res) => {
 
 exports.createOrder = async (req, res) => {
   try {
-    const order = await mobileService.createOrder(req.body)
+    const order = await mobileService.createOrder(req.body, req.client._id)
 
     res.status(201).json({
       success: true,
@@ -123,9 +123,51 @@ exports.createOrder = async (req, res) => {
     })
   } catch (error) {
     console.error('Erreur createOrder mobile:', error)
+    
+    // Gestion des erreurs de validation
+    if (error.message.includes('incomplètes') || error.message.includes('au moins un produit')) {
+      return res.status(400).json({
+        success: false,
+        message: error.message
+      })
+    }
+    
+    // Erreur serveur
     res.status(500).json({
       success: false,
       message: error.message || 'Erreur lors de la création de la commande'
+    })
+  }
+}
+
+exports.getMyOrders = async (req, res) => {
+  try {
+    const orders = await mobileService.getOrdersByUserId(req.client._id, req.query)
+
+    res.json({
+      success: true,
+      ...orders
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Erreur lors de la récupération des commandes'
+    })
+  }
+}
+
+exports.getMyOrder = async (req, res) => {
+  try {
+    const order = await mobileService.getOrderById(req.params.id, req.client._id)
+
+    res.json({
+      success: true,
+      order
+    })
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      message: error.message || 'Commande non trouvée'
     })
   }
 }
