@@ -1,6 +1,6 @@
 const Cart = require('../models/Cart')
-const Vehicule = require('../models/Vehicule')
-const Piece = require('../models/Piece')
+const Vehicle = require('../models/Vehicle')
+const Part = require('../models/Part')
 
 class CartService {
   async getCart(clientId) {
@@ -23,9 +23,9 @@ class CartService {
 
     let produit
     if (type === 'Vehicule') {
-      produit = await Vehicule.findById(produitId)
+      produit = await Vehicle.findById(produitId)
     } else {
-      produit = await Piece.findById(produitId)
+      produit = await Part.findById(produitId)
     }
 
     if (!produit) {
@@ -74,8 +74,8 @@ class CartService {
       cart.items.pull(itemId)
     } else {
       if (item.type === 'Piece') {
-        const piece = await Piece.findById(item.produitId)
-        if (piece && piece.stock < quantite) {
+        const part = await Part.findById(item.produitId)
+        if (part && part.stock < quantite) {
           throw new Error('Stock insuffisant')
         }
       }
