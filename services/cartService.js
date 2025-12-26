@@ -22,7 +22,7 @@ class CartService {
     }
 
     let produit
-    if (type === 'Vehicule') {
+    if (type === 'Vehicle') {
       produit = await Vehicle.findById(produitId)
     } else {
       produit = await Part.findById(produitId)
@@ -32,7 +32,7 @@ class CartService {
       throw new Error('Produit non trouvé')
     }
 
-    if (type === 'Piece' && produit.stock < quantite) {
+    if (type === 'Part' && produit.stock < quantite) {
       throw new Error('Stock insuffisant')
     }
 
@@ -73,7 +73,7 @@ class CartService {
     if (quantite <= 0) {
       cart.items.pull(itemId)
     } else {
-      if (item.type === 'Piece') {
+      if (item.type === 'Part') {
         const part = await Part.findById(item.produitId)
         if (part && part.stock < quantite) {
           throw new Error('Stock insuffisant')

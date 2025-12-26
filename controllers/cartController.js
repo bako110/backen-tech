@@ -28,10 +28,10 @@ exports.addItem = async (req, res) => {
       })
     }
 
-    if (!['Vehicule', 'Piece'].includes(type)) {
+    if (!['Vehicle', 'Part'].includes(type)) {
       return res.status(400).json({
         success: false,
-        message: 'Type invalide. Doit être Vehicule ou Piece'
+        message: 'Type invalide. Doit être Vehicle ou Part'
       })
     }
 

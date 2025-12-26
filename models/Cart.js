@@ -8,7 +8,7 @@ const cartItemSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['Vehicule', 'Piece'],
+    enum: ['Vehicle', 'Part'],
     required: true
   },
   quantite: {
